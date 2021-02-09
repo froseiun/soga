@@ -50,10 +50,6 @@ if [[ x"${release}" == x"redhat" ]]; then
     if [[ ${os_version} -le 6 ]]; then
         echo -e "${red}请使用 RHEL & CentOS 7 或更高版本的系统！${plain}\n" && exit 1
     fi
-elif [[ x"${release}" == x"fedora" ]]; then
-    if [[ ${os_version} -lt 29 ]]; then
-        echo -e "${red}请使用 Fedora 29 或更高版本的系统！${plain}\n" && exit 1
-    fi
 elif [[ x"${release}" == x"ubuntu" ]]; then
     if [[ ${os_version} -lt 16 ]]; then
         echo -e "${red}请使用 Ubuntu 16 或更高版本的系统！${plain}\n" && exit 1
