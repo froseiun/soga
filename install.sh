@@ -11,20 +11,22 @@ cur_dir=$(pwd)
 [[ $EUID -ne 0 ]] && echo -e "${red}错误：${plain} 必须使用root用户运行此脚本！\n" && exit 1
 
 # check os
-if [[ -f /etc/redhat-release ]]; then
-    release="centos"
+if [[ -f /etc/fedora-release ]]; then
+    release="fedora"
+elif [[ -f /etc/redhat-release ]]; then
+    release="redhat"
 elif cat /etc/issue | grep -Eqi "debian"; then
     release="debian"
 elif cat /etc/issue | grep -Eqi "ubuntu"; then
     release="ubuntu"
 elif cat /etc/issue | grep -Eqi "centos|red hat|redhat"; then
-    release="centos"
+    release="redhat"
 elif cat /proc/version | grep -Eqi "debian"; then
     release="debian"
 elif cat /proc/version | grep -Eqi "ubuntu"; then
     release="ubuntu"
 elif cat /proc/version | grep -Eqi "centos|red hat|redhat"; then
-    release="centos"
+    release="redhat"
 else
     echo -e "${red}未检测到系统版本，请联系脚本作者！${plain}\n" && exit 1
 fi
@@ -44,9 +46,13 @@ if [[ -z "$os_version" && -f /etc/lsb-release ]]; then
     os_version=$(awk -F'[= ."]+' '/DISTRIB_RELEASE/{print $2}' /etc/lsb-release)
 fi
 
-if [[ x"${release}" == x"centos" ]]; then
+if [[ x"${release}" == x"redhat" ]]; then
     if [[ ${os_version} -le 6 ]]; then
-        echo -e "${red}请使用 CentOS 7 或更高版本的系统！${plain}\n" && exit 1
+        echo -e "${red}请使用 RHEL & CentOS 7 或更高版本的系统！${plain}\n" && exit 1
+    fi
+elif [[ x"${release}" == x"fedora" ]]; then
+    if [[ ${os_version} -lt 29 ]]; then
+        echo -e "${red}请使用 Fedora 29 或更高版本的系统！${plain}\n" && exit 1
     fi
 elif [[ x"${release}" == x"ubuntu" ]]; then
     if [[ ${os_version} -lt 16 ]]; then
@@ -59,9 +65,11 @@ elif [[ x"${release}" == x"debian" ]]; then
 fi
 
 install_base() {
-    if [[ x"${release}" == x"centos" ]]; then
+    if [[ x"${release}" == x"redhat" ]]; then
         yum install epel-release -y
         yum install wget curl tar crontabs socat -y
+    elif [[ x"${release}" == x"fedora" ]]; then
+        dnf install wget curl tar crontabs socat -y
     else
         apt install wget curl tar cron socat -y
     fi
